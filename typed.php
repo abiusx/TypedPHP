@@ -15,6 +15,12 @@ class TypeNotFoundException extends TypedPHPException {};
 class TypedPHP
 {
 	/**
+	 * Whether to require type info, and throw
+	 * when none found.
+	 * @var boolean
+	 */
+	public static $strict=false; #TODO
+	/**
 	 * List of PHP types
 	 * @var array
 	 */
@@ -22,7 +28,7 @@ class TypedPHP
 		"bool"=>"bool","true"=>"bool","false"=>"bool","boolean"=>"bool"
 		,"void"=>"null","null"=>"null"
 		,"float"=>"float","double"=>"float"
-		,"int"=>"int","integer"=>"int"
+		,"int"=>"integer","integer"=>"integer"
 		,"string"=>"string"
 		,"array"=>"array"
 		,"object"=>"object"
@@ -55,20 +61,19 @@ class TypedPHP
 				throw new TypeNotFoundException("Type '{$t}' not found.",$file,$line);
 				continue;
 			}
-			$out[]=$t;
+			$out[]=self::$types[$t];
 		}
 		return $out;
 
 	}
 	/**
 	 * Checks whether a specific type is in a typedef list
-	 * @param  string $_type [description]
+	 * @param  mixed $_type [description]
 	 * @param  array $types [description]
 	 * @return bool        [description]
 	 */
-	protected static function check_type_in_types($_type,$types)
+	protected static function check_type_in_types($arg,$types)
 	{
-		$arg=$_type;
 		foreach ($types as $t)
 		{
 			$type=strtolower($t);
@@ -82,13 +87,14 @@ class TypedPHP
 
 	public static function check_args_type($class,$method_name,$args)
 	{
+		return true;
 		#TODO: need arg names to match via doc, change arg{$i} names to the actual arg names.
 		$r=new ReflectionMethod($class,$method_name);
 		$doc=$r->getDocComment();
 		$line=$r->getStartLine();
 		$file=$r->getFileName();
 		$endline=$r->getEndLine();
-		var_dump($doc);
+		// var_dump($doc);
 		if (!preg_match("/@return\s+(.*?)\s+/", $doc,$match)) 
 			return false;
 		$types=self::typestring_to_list($match[1],$file,$line);
@@ -97,7 +103,7 @@ class TypedPHP
 			elseif (strtolower(gettype($arg))==strtolower($type)) return true;
 
 		throw new TypeMistmatchException("Type of return argument '".gettype($arg).
-			"' does not match any of the allowed types: '".implode(" or ",$types)."'",$file,$endline);
+			"' does not match any of the allowed types: [".implode(" or ",$types)."]",$file,$endline);
 		return false;
 	}
 	

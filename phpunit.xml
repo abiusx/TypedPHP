@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- test files should end in Test.php -->
+<!-- test files should end in Test.php
+  { "keys": ["super+shift+t"],"command":"phpunit_run_tests", "args":{}},
+  { "keys": ["ctrl+super+shift+t"],"command":"phpunit_run_all_tests", "args":{}},
+ -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/3.7/phpunit.xsd"
          bootstrap="test/init.php"
